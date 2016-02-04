@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Randomize</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_select_all">Select all</string>
+
+    <string name="randomize">Randomize</string>
+
+    <string name="snackbar_edit_mode">Edit mode enabled</string>
+
+    <string name="dialog_create">Create</string>
+    <string name="dialog_cancel">Cancel</string>
+    <string name="dialog_delete">Delete</string>
+    <string name="dialog_close">Close</string>
+    <string name="dialog_list_name_title">Create new list</string>
+    <string name="dialog_list_name_hint">New list name</string>
+    <string name="dialog_erase_list">Delete this list?</string>
+    <string name="dialog_element_name_title">Create new element</string>
+    <string name="dialog_element_name_hint">New element name</string>
+    <string name="dialog_erase_element">Delete this element?</string>
+    <string name="dialog_more_elements">Create at least two elements</string>
+
+    <!-- ACCESSIBILITY -->
+    <string name="delete_list_content_descriptor">Delete list</string>
+</resources>
