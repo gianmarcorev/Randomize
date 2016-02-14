@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_edit">Edit</string>
     <string name="action_select_all">Select all</string>
+    <string name="action_about">About</string>
 
     <string name="randomize">Randomize</string>
 
@@ -19,6 +20,8 @@
     <string name="dialog_element_name_hint">New element name</string>
     <string name="dialog_erase_element">Delete this element?</string>
     <string name="dialog_more_elements">Create at least two elements</string>
+
+    <string name="dialog_about_message">Message</string>
 
     <!-- ACCESSIBILITY -->
     <string name="delete_list_content_descriptor">Delete list</string>

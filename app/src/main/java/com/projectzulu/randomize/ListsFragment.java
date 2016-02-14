@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Loader;
@@ -11,27 +12,27 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import com.projectzulu.randomize.data.DbOpenHelper;
-import com.projectzulu.randomize.data.ListsCursorAdapter;
+import com.projectzulu.randomize.data.ListsAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ListsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        NewListDialog.NewListDialogListener, ListsCursorAdapter.ListsAdapterCallbacks {
+        NewListDialog.NewListDialogListener, ListsAdapter.ListsAdapterCallbacks {
 
     private static final String LOG_TAG = ListsFragment.class.getSimpleName();
 
-    private ListView mListView;
-    private ListsCursorAdapter mAdapter;
-
+    private Context mContext;
+    private RecyclerView mRecyclerView;
+    private ListsAdapter mAdapter;
     private FloatingActionButton mFab;
 
     public interface ListsFragmentCallbacks {
@@ -43,22 +44,20 @@ public class ListsFragment extends Fragment implements LoaderManager.LoaderCallb
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mContext = getActivity();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_lists, container, false);
 
-        mListView = (ListView) rootView.findViewById(R.id.list_view);
-        mAdapter = new ListsCursorAdapter(getActivity(), null, this);
-        mListView.setAdapter(mAdapter);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Cursor cursor = mAdapter.getCursor();
-                cursor.moveToPosition(position);
-                String listName = cursor.getString(cursor.getColumnIndex(DbOpenHelper.ListsTable.COLUMN_NAME));
-                mCallbacks.openList(id, listName);
-            }
-        });
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list_view);
+        mAdapter = new ListsAdapter(mContext, null, this);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
 
         mFab = ((MainActivity) getActivity()).getFab();
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -125,6 +124,11 @@ public class ListsFragment extends Fragment implements LoaderManager.LoaderCallb
         DbOpenHelper helper = new DbOpenHelper(getActivity());
         helper.getWritableDatabase().delete(DbOpenHelper.ListsTable.TABLE_NAME,
                 DbOpenHelper.ListsTable._ID + "=?", new String[]{Long.toString(id)});
+
+        // We also need to delete elements bound to the list in the elements table
+        helper.getWritableDatabase().delete(DbOpenHelper.ElementsTable.TABLE_NAME,
+                DbOpenHelper.ElementsTable.COLUMN_LIST_ID + "=?", new String[]{Long.toString(id)});
+
         getLoaderManager().restartLoader(0, null, this);
     }
 
@@ -140,6 +144,11 @@ public class ListsFragment extends Fragment implements LoaderManager.LoaderCallb
                     }
                 });
         builder.create().show();
+    }
+
+    @Override
+    public void onItemClick(long id, String name) {
+        mCallbacks.openList(id, name);
     }
 
     public void setActivityCallbacks(ListsFragmentCallbacks callbacks) {

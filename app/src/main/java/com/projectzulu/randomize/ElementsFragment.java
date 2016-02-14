@@ -57,10 +57,10 @@ public class ElementsFragment extends Fragment implements LoaderManager.LoaderCa
     private RecyclerView mRecyclerView;
 
     private FloatingActionButton mFab;
+    private float mFabDefaultY;
 
     private boolean mEditing;
     private Snackbar mSnackBar;
-
 
     public ElementsFragment() {
         // Required empty public constructor
@@ -103,7 +103,7 @@ public class ElementsFragment extends Fragment implements LoaderManager.LoaderCa
 
         // Main list
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list_view);
-        mRecyclerView.setHasFixedSize(true);
+        //mRecyclerView.setHasFixedSize(true);
         mAdapter = new ElementsAdapter(mContext, null, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -111,10 +111,12 @@ public class ElementsFragment extends Fragment implements LoaderManager.LoaderCa
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (mEditing) {
-                    if (dy > 0 && mFab.isShown())
-                        mFab.hide();
-                    else if (dy < 0 && !mFab.isShown())
-                        mFab.show();
+                    if (dy > 0 && mFab.getTranslationY() == 0) {
+                        mFab.animate().translationY(mFab.getHeight() + Utility.dpToPx(16))
+                                .setDuration(200).start();
+                    } else if (dy < 0 && mFab.getTranslationY() > 0) {
+                        mFab.animate().translationY(0).setDuration(200).start();
+                    }
                 }
             }
         });
@@ -124,6 +126,7 @@ public class ElementsFragment extends Fragment implements LoaderManager.LoaderCa
 
         // FAB related things
         mFab = ((MainActivity) getActivity()).getFab();
+        mFabDefaultY = mFab.getY();
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

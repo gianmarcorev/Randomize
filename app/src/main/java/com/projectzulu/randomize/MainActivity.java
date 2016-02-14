@@ -1,11 +1,13 @@
 package com.projectzulu.randomize;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.graphics.drawable.TransitionDrawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -30,25 +32,6 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.Lis
                 .commit();
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
-        // Currently only the main list fragment needs to be notified if the fab has been clicked
-//        mFab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                // Notify only the currently visible fragment
-//                ListsFragment maf = (ListsFragment) getFragmentManager()
-//                        .findFragmentByTag("MainFragment");
-//                if (maf != null && maf.isVisible()) {
-//                    maf.onFabClicked();
-//                    return;
-//                }
-//
-//                ElementsFragment ef = (ElementsFragment) getFragmentManager()
-//                        .findFragmentByTag("ElementsFragment");
-//                if (ef != null && ef.isVisible()) {
-//                    ef.onFabClicked();
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -65,9 +48,12 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.Lis
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_about:
+                showAboutDialog();
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -109,5 +95,12 @@ public class MainActivity extends AppCompatActivity implements ListsFragment.Lis
                         R.animator.elements_fragment_slide_out)
                 .replace(R.id.main_container, ef, FRAGMENT_ELEMENTS_TAG)
                 .addToBackStack(null).commit();
+    }
+
+    private void showAboutDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(LayoutInflater.from(this).inflate(R.layout.dialog_about, null, false))
+                .create();
+        dialog.show();
     }
 }
